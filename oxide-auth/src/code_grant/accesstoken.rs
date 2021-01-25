@@ -280,7 +280,7 @@ impl AccessToken {
                     ..
                 },
                 Input::Authenticated,
-            ) => Self::authencicated(client, code, redirect_uri),
+            ) => Self::authenticated(client, code, redirect_uri),
             (
                 AccessTokenState::Recover {
                     client, redirect_uri, ..
@@ -344,10 +344,19 @@ impl AccessToken {
             }
         }
 
+        let mut code = None;
+
         match request.grant_type() {
-            Some(ref cow) if cow == "authorization_code" => (),
+            Some(ref cow) => {
+                if cow == "authorization_code" {
+                    code = Some(request.code().ok_or_else(Error::invalid)?.to_string());
+                } else if cow == "password" {
+                    code = Some("".to_string());
+                } else {
+                    return Err(Error::invalid_with(AccessTokenErrorType::UnsupportedGrantType));
+                }
+            }
             None => return Err(Error::invalid()),
-            Some(_) => return Err(Error::invalid_with(AccessTokenErrorType::UnsupportedGrantType)),
         };
 
         let (client_id, passdata) = credentials.into_client().ok_or_else(Error::invalid)?;
@@ -358,17 +367,17 @@ impl AccessToken {
             .parse()
             .map_err(|_| Error::invalid())?;
 
-        let code = request.code().ok_or_else(Error::invalid)?;
+        let code = code.unwrap_or("".to_string());
 
         Ok(AccessTokenState::Authenticate {
             client: client_id.to_string(),
             passdata: passdata.map(Vec::from),
             redirect_uri,
-            code: code.into_owned(),
+            code,
         })
     }
 
-    fn authencicated(client: String, code: String, redirect_uri: url::Url) -> AccessTokenState {
+    fn authenticated(client: String, code: String, redirect_uri: url::Url) -> AccessTokenState {
         AccessTokenState::Recover {
             client,
             code,

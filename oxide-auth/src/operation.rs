@@ -12,9 +12,9 @@ impl OAuthOperation for Authorize {
     type Error = WebError;
 
     fn run<E>(self, endpoint: E) -> Result<Self::Item, Self::Error>
-        where
-            E: Endpoint<OAuthRequest>,
-            WebError: From<E::Error>,
+    where
+        E: Endpoint<OAuthRequest>,
+        WebError: From<E::Error>,
     {
         AuthorizationFlow::prepare(endpoint)?
             .execute(self.0)
@@ -30,9 +30,9 @@ impl OAuthOperation for Token {
     type Error = WebError;
 
     fn run<E>(self, endpoint: E) -> Result<Self::Item, Self::Error>
-        where
-            E: Endpoint<OAuthRequest>,
-            WebError: From<E::Error>,
+    where
+        E: Endpoint<OAuthRequest>,
+        WebError: From<E::Error>,
     {
         AccessTokenFlow::prepare(endpoint)?
             .execute(self.0)
@@ -48,9 +48,9 @@ impl OAuthOperation for Refresh {
     type Error = WebError;
 
     fn run<E>(self, endpoint: E) -> Result<Self::Item, Self::Error>
-        where
-            E: Endpoint<OAuthRequest>,
-            WebError: From<E::Error>,
+    where
+        E: Endpoint<OAuthRequest>,
+        WebError: From<E::Error>,
     {
         RefreshFlow::prepare(endpoint)?
             .execute(self.0)
@@ -66,9 +66,9 @@ impl OAuthOperation for Resource {
     type Error = Result<OAuthResponse, WebError>;
 
     fn run<E>(self, endpoint: E) -> Result<Self::Item, Self::Error>
-        where
-            E: Endpoint<OAuthRequest>,
-            WebError: From<E::Error>,
+    where
+        E: Endpoint<OAuthRequest>,
+        WebError: From<E::Error>,
     {
         ResourceFlow::prepare(endpoint)
             .map_err(|e| Err(WebError::from(e)))?

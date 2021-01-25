@@ -91,9 +91,9 @@ pub trait OAuthOperation: Sized + 'static {
 
     /// Performs the oxide operation with the provided endpoint
     fn run<E>(self, endpoint: E) -> Result<Self::Item, Self::Error>
-        where
-            E: Endpoint<OAuthRequest>,
-            WebError: From<E::Error>;
+    where
+        E: Endpoint<OAuthRequest>,
+        WebError: From<E::Error>;
 
     /// Turn an OAuthOperation into a Message to send to an actor
     fn wrap<Extras>(self, extras: Extras) -> OAuthMessage<Self, Extras> {
@@ -344,8 +344,8 @@ impl WebResponse for OAuthResponse {
 }
 
 impl<Operation, Extras> Message for OAuthMessage<Operation, Extras>
-    where
-        Operation: OAuthOperation + 'static,
+where
+    Operation: OAuthOperation + 'static,
 {
     type Result = Result<Operation::Item, Operation::Error>;
 }
